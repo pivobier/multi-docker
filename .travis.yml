@@ -1,0 +1,23 @@
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t  ppivarci/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true ppivarci/react-test npm test
+
+after_success:
+    - docker build -t ppivarci/multi-client ./client
+    - docker build -t ppivarci/multi-nginx ./nginx
+    - docker build -t ppivarci/multi-server ./server
+    - docker build -t ppivarci/multi-work ./work
+    # Log in to the docker CLI 
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    # Take those images and push to dockerhup
+    - docker push ppivarci/multi-client
+    - docker push ppivarci/multi-nginx
+    - docker push ppivarci/multi-server
+    - docker push ppivarci/multi-worker
+
