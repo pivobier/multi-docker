@@ -20,4 +20,14 @@ after_success:
     - docker push ppivarci/multi-nginx
     - docker push ppivarci/multi-server
     - docker push ppivarci/multi-worker
-
+    deploy:
+        provider: elasticbeanstalk
+        region: "us-east-1"
+        app: "multi-docker"
+        env: "MultiDocker-env"
+        bucket_name: "elasticbeanstalk-us-east-1-538744167223"
+        backet_path: "multi-docker"
+        on:
+          branch: master
+        access_key_id: $AWS_ACCESS_KEY
+        secret_access_key: $AWS_SECRET_KEY
